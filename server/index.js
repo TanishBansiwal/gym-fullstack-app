@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -7,7 +8,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI || "mongodb://127.0.0.1:27017/gymDB")
+mongoose.connect(
+  process.env.MONGO_URI || "mongodb+srv://myAtlasDBUser:1234@myatlasclusteredu.hquwk.mongodb.net/gymDB"
+)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
 
