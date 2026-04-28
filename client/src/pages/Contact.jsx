@@ -11,7 +11,7 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/contact", {
+    const res = await fetch("https://gym-backend-od89.onrender.com/contacts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

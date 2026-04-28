@@ -6,13 +6,13 @@ export default function Admin() {
 const [editData, setEditData] = useState({ name: "", email: "" });
 
   useEffect(() => {
-    fetch("http://localhost:5000/contacts")
+    fetch("https://gym-backend-od89.onrender.com/contacts")
       .then(res => res.json())
       .then(data => setContacts(data));
   }, []);
 
   const handleDelete = async (id) => {
-  await fetch(`http://localhost:5000/contacts/${id}`, {
+  await fetch(`https://gym-backend-od89.onrender.com/contacts/${id}`, {
     method: "DELETE"
   });
 
@@ -28,7 +28,7 @@ const startEdit = (contact) => {
 const handleUpdate = async (id) => {
     console.log("Updating:", editData);
   try {
-    const res = await fetch(`http://localhost:5000/contacts/${id}`, {
+    const res = await fetch(`https://gym-backend-od89.onrender.com/contacts/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -40,7 +40,7 @@ const handleUpdate = async (id) => {
     console.log(result);
 
     // refresh data AFTER update
-    const updatedRes = await fetch("http://localhost:5000/contacts");
+    const updatedRes = await fetch("https://gym-backend-od89.onrender.com/contacts");
     const updatedData = await updatedRes.json();
 
     setContacts(updatedData);
