@@ -21,7 +21,7 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model("Contact", contactSchema);
 
-app.post("/contact", async (req, res) => {
+app.post("/contacts", async (req, res) => {
   try {
     const newContact = new Contact(req.body);
     await newContact.save();
