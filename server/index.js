@@ -1,4 +1,7 @@
 require("dotenv").config();
+
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -20,6 +23,51 @@ const contactSchema = new mongoose.Schema({
 });
 
 const Contact = mongoose.model("Contact", contactSchema);
+
+const ADMIN = {
+  email: "admin@gym.com",
+  password: "$2b$10$DSUMRrPbayR6rS2iSylhReTjJpLJF3SDCnqhZAGgmjUL1dTidi/Ka"
+};
+
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(403).json({ message: "No token" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (email !== ADMIN.email) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  const isMatch = await bcrypt.compare(password.trim(), ADMIN.password);
+
+console.log({
+  entered: password,
+  trimmed: password.trim(),
+  match: isMatch
+});
+
+  if (!isMatch) {
+    return res.status(401).json({ message: "Invalid credentials" });
+  }
+
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+  res.json({ token });
+});
 
 app.post("/contacts", async (req, res) => {
   try {
@@ -55,8 +103,12 @@ app.put("/contacts/:id", async (req, res) => {
   }
 });
 
+
 const PORT = process.env.PORT || 5000;
+
+
 
 app.listen(PORT, () => {
   console.log("Server running");
 });
+
