@@ -1,11 +1,15 @@
 require("dotenv").config();
 
+const { Resend } = require("resend");
+const resend = new Resend(process.env.re_626DqHn6_LrTUyQnEnXG1wouHrj1bJ1gR);
+
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const nodemailer = require("nodemailer");
+
 
 const app = express();
 
@@ -95,13 +99,12 @@ app.post("/contacts", async (req, res) => {
 
     console.log("Saving done. Sending email...");
 
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER,
-      subject: "New Contact Form Submission",
-      text: `Name: ${req.body.name}\nEmail: ${req.body.email}`
-    });
-
+    const info =await resend.emails.send({
+  from: "Gym App <onboarding@resend.dev>",
+  to: process.env.EMAIL_USER,
+  subject: "New Contact Form Submission",
+  text: `Name: ${req.body.name}\nEmail: ${req.body.email}`
+});
     console.log("Email sent:", info.response);
 
     res.json({ message: "Message sent successfully" });
