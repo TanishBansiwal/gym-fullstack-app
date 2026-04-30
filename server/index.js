@@ -88,6 +88,7 @@ console.log({
 
 
 app.post("/contacts", async (req, res) => {
+   console.log("Contact route hit:", req.body);
   try {
     console.log("Contact route hit:", req.body);
 
