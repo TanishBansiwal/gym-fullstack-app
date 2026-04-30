@@ -1,18 +1,37 @@
 import { useEffect, useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 export default function Admin() {
   const [contacts, setContacts] = useState([]);
+
+  const chartData = [
+  {
+    name: "Contacts",
+    count: contacts.length
+  }
+];
+
   const [editingId, setEditingId] = useState(null);
 const [editData, setEditData] = useState({ name: "", email: "" });
 
   useEffect(() => {
-    fetch("https://gym-backend-od89.onrender.com/contacts")
+    fetch("https://gym-backend-od89.onrender.com/contacts" , {
+  headers: {
+  "Content-Type": "application/json",
+  Authorization: localStorage.getItem("token")
+}
+})
       .then(res => res.json())
       .then(data => setContacts(data));
   }, []);
 
   const handleDelete = async (id) => {
-  await fetch(`https://gym-backend-od89.onrender.com/contacts/${id}`, {
+  await fetch(`https://gym-backend-od89.onrender.com/contacts/${id}`,  {
+ headers: {
+  "Content-Type": "application/json",
+  Authorization: localStorage.getItem("token")
+}
+}, {
     method: "DELETE"
   });
 
@@ -28,7 +47,12 @@ const startEdit = (contact) => {
 const handleUpdate = async (id) => {
     console.log("Updating:", editData);
   try {
-    const res = await fetch(`https://gym-backend-od89.onrender.com/contacts/${id}`, {
+    const res = await fetch(`https://gym-backend-od89.onrender.com/contacts/${id}` , {
+  headers: {
+  "Content-Type": "application/json",
+  Authorization: localStorage.getItem("token")
+}
+}, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -40,7 +64,12 @@ const handleUpdate = async (id) => {
     console.log(result);
 
     // refresh data AFTER update
-    const updatedRes = await fetch("https://gym-backend-od89.onrender.com/contacts");
+    const updatedRes = await fetch("https://gym-backend-od89.onrender.com/contacts" , {
+  headers: {
+  "Content-Type": "application/json",
+  Authorization: localStorage.getItem("token")
+}
+});
     const updatedData = await updatedRes.json();
 
     setContacts(updatedData);
@@ -57,6 +86,20 @@ const handleUpdate = async (id) => {
     <h1 className="text-3xl font-bold mb-8 text-center">
       Admin Dashboard
     </h1>
+
+
+    <div className="bg-gray-900 p-6 rounded-xl mb-6">
+  <h2 className="text-xl mb-4">Dashboard</h2>
+
+  <BarChart width={300} height={200} data={chartData}>
+    <CartesianGrid strokeDasharray="3 3" />
+    <XAxis dataKey="name" />
+    <YAxis />
+    <Tooltip />
+    <Bar dataKey="count" fill="#ef4444" />
+  </BarChart>
+</div>
+
 
     {contacts.length === 0 ? (
       <p className="text-center text-gray-400">No contacts yet</p>

@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
 
 const app = express();
 
@@ -28,6 +29,22 @@ const ADMIN = {
   email: "admin@gym.com",
   password: "$2b$10$DSUMRrPbayR6rS2iSylhReTjJpLJF3SDCnqhZAGgmjUL1dTidi/Ka"
 };
+
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+
+//temporary
+
+////////////////////////////////////
 
 const verifyToken = (req, res, next) => {
   const token = req.headers.authorization;
@@ -69,13 +86,29 @@ console.log({
   res.json({ token });
 });
 
+
 app.post("/contacts", async (req, res) => {
   try {
+    console.log("Contact route hit:", req.body);
+
     const newContact = new Contact(req.body);
     await newContact.save();
 
-    res.json({ message: "Data saved successfully" });
+    console.log("Saving done. Sending email...");
+
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: process.env.EMAIL_USER,
+      subject: "New Contact Form Submission",
+      text: `Name: ${req.body.name}\nEmail: ${req.body.email}`
+    });
+
+    console.log("Email sent:", info.response);
+
+    res.json({ message: "Message sent successfully" });
+
   } catch (error) {
+    console.error("ERROR:", error);
     res.status(500).json({ message: "Error saving data" });
   }
 });
